@@ -1,0 +1,12 @@
+$virtualmachines = Get-Content 'C:\scripts\ps-weeklyreboot\virtualmachines.txt'
+
+
+#Send message to all users about the shutdown
+        
+        foreach ($VM in $virtualmachines)
+
+        {
+
+       msg * /server $VM /time:0 /v "Computer services are going down for the weekly Sunday refresh. At 8:00 PM CST the servers will shutdown. Please save your work and log off. Services will resume approximately 1 hour later at 09:00 PM CST"
+       
+        } 
