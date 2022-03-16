@@ -1,0 +1,49 @@
+##################### Weekly Reboot Script
+##################### By Arlandus Brown III
+
+                        #Synopsis
+# Script is to reboot designated servers. Main functions are as follows....
+
+#1. Message all logged in users of shutdown and give them time to log off
+#2. Connect to vsphere and Shutdown all the VMs in your text file
+#3. Disconnect the NIC on all VMs (This keeps people from hammering the servers before they are fully up again)
+#4. Turn all the VMs back on again
+#5. Reconnect the NICs to allow for logins again
+
+######## Script Starts Here ########
+
+#Uncomment next line if you need to install powercli module if you don't have it 
+#Install-Module -Name VMware.PowerCLI
+
+#Connect to your vsphere server
+set-powercliconfiguration -DefaultVIServerMode single -InvalidCertificateAction ignore -scope user -Confirm:$false
+connect-viserver –server yourvsphereserver.yourdomain.local -User yourdomain\powershell -Password yourpassword
+
+#Your file containing the names of your servers. They must match vsphere not DNS.
+$virtualmachines = Get-Content 'C:\scripts\ps-weeklyreboot\virtualmachines.txt'
+
+#Shutdown all the VMs
+        foreach ($VM in $virtualmachines)
+
+        {
+
+        Shutdown-VMGuest -VM $VM -Confirm:$false
+
+        }
+
+#Pause give the VMs time to shut down
+Start-Sleep 3000
+
+
+#Turn all the VMs back on
+        foreach ($VM in $virtualmachines)
+
+        {
+
+       
+        Start-VM -VM $VM -Confirm:$false
+
+        }
+
+Start-Sleep 3000
+Restart-Computer
